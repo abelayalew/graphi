@@ -1,0 +1,9 @@
+black==23.3.0
+Django==5.0
+django-filter==23.5
+graphene-django==3.2.0
+ipython==8.14.0
+pre-commit==3.3.3
+prospector==1.10.2
+python-decouple==3.7
+django-cors-headers==4.3.1
