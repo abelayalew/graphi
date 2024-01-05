@@ -19,10 +19,10 @@ class Mutations(Types, graphene.ObjectType):
             (graphene.Mutation,),
             {
                 'Argument': argument_class,
-                'data': graphene.Field(cls.get_or_generate_django_object_type(model))
+                'data': graphene.Field(cls.get_or_generate_django_object_type(model)),
+                'mutate': cls.create_mutate(model)
             }
         )
-        setattr(_, 'mutate', cls.create_mutate(model))
         return _
     
     @classmethod
