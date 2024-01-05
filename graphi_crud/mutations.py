@@ -4,11 +4,24 @@ import graphene
 class Mutations(Types, graphene.ObjectType):
     @classmethod
     def generate_argument_class(cls, model):
+        input_type = cls.generate_input_type(model)
+        return type(
+            f'Arguments',
+            (),
+            {
+                "inputs": graphene.List(input_type)
+            }
+        )
+    
+    @classmethod
+    def generate_input_type(cls, model):
         fields = cls.get_fields(model)
         return type(
-            f'Argument',
-            (graphene.InputObjectType,),
-            {field: graphene.String() for field in fields}
+            f"{model.__name__}InputType",
+            (graphene.InputObjectType, ),
+            {
+                field: graphene.String() for field in fields
+            }
         )
     
     @classmethod
@@ -18,8 +31,9 @@ class Mutations(Types, graphene.ObjectType):
             f'{model.__name__}Mutation',
             (graphene.Mutation,),
             {
-                'Argument': argument_class,
-                'data': graphene.Field(cls.get_or_generate_django_object_type(model)),
+                'Arguments': argument_class,
+                'data': graphene.List(cls.get_or_generate_django_object_type(model)),
+                'affected_rows': graphene.Int(),
                 'mutate': cls.create_mutate(model)
             }
         )
@@ -27,9 +41,19 @@ class Mutations(Types, graphene.ObjectType):
     
     @classmethod
     def create_mutate(cls, model):
-        def mutate(self, info, **kwargs):
-            data = kwargs.get('data')
-            return model.objects.create(**data)
+        def mutate(root, info, *args, **kwargs):
+            inputs = kwargs.get('inputs')
+            if not inputs or not isinstance(inputs, list):
+                return None
+            
+            created_objects = []
+            for input in inputs:
+                created_objects.append(model.objects.create(**input))
+
+            return {
+                'data': created_objects,
+                'affected_rows': len(created_objects)
+            }
         return mutate
     
     @classmethod
