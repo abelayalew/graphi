@@ -3,7 +3,7 @@ import re
 import graphene
 from django.apps import apps
 from graphene import List, ObjectType
-from graphene_django import DjangoObjectType
+
 
 class StringFilterKeywordsInputType(graphene.InputObjectType):
     exact = graphene.String()
