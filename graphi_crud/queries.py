@@ -87,26 +87,26 @@ class Queries(Types, ObjectType):
                 fields.append(field.name)
         return fields
 
+    @classmethod
+    def query_set_builder(cls, where: dict):
+        _ = {}
+        if not where:
+            return _
+
+        for field, lookup in where.items():
+            for lookup_word, value in lookup.items():
+                _[f"{field}__{lookup_word}"] = value
+        return _
 
     @classmethod
-    def generate_resolve_method(cls, model):
-        def query_set_builder(where: dict):
-            _ = {}
-            if not where:
-                return _
-
-            for field, lookup in where.items():
-                for lookup_word, value in lookup.items():
-                    _[f"{field}__{lookup_word}"] = value
-            return _
-        
+    def generate_resolve_method(cls, model):        
         def _(root, info, *args, **kwargs):
             where = kwargs.get("where")
             offset = kwargs.get("offset")
             limit = kwargs.get("limit")
 
             queryset = model.objects.all()
-            query = query_set_builder(where)
+            query = cls.query_set_builder(where)
             queryset = queryset.filter(**query)
 
             if offset:

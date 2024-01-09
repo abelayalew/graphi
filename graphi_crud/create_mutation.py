@@ -46,7 +46,7 @@ class CreateMutation(MutationsMixin):
     def generate_create_mutation_class(cls, model):
         argument_class = cls.generate_argument_class(model)
         _ =  type(
-            f'{model.__name__}Mutation',
+            f'{model.__name__}CreateMutation',
             (graphene.Mutation,),
             {
                 'Arguments': argument_class,
