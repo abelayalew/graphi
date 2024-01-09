@@ -1,5 +1,6 @@
 from .graphi_types import Types
 import graphene
+from django.db.utils import IntegrityError
 
 class Mutations(Types, graphene.ObjectType):
     @classmethod
@@ -25,7 +26,7 @@ class Mutations(Types, graphene.ObjectType):
         )
     
     @classmethod
-    def generate_mutation_class(cls, model):
+    def generate_create_mutation_class(cls, model):
         argument_class = cls.generate_argument_class(model)
         _ =  type(
             f'{model.__name__}Mutation',
@@ -60,5 +61,5 @@ class Mutations(Types, graphene.ObjectType):
     def generate_mutations(cls, _apps):
         models = cls.find_all_models(_apps)
         for model in models:
-            mutation_class = cls.generate_mutation_class(model)
-            setattr(cls, f'create_{model.__name__.lower()}', mutation_class.Field())
+            create_mutation_class = cls.generate_create_mutation_class(model)
+            setattr(cls, f'create_{model.__name__.lower()}', create_mutation_class.Field())
