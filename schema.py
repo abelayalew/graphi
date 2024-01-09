@@ -1,16 +1,16 @@
 import graphene
 
 from graphi_crud.queries import Queries
-from graphi_crud.mutations import Mutations
+from graphi_crud.create_mutation import CreateMutation
 
 
 Queries.generate_queries(["accounts"])
-Mutations.generate_mutations(['accounts'])
+CreateMutation.generate_mutations(['accounts'])
 
 class Query(Queries):
     pass
 
-class Mutation(Mutations):
+class Mutation(CreateMutation):
     pass
 
 
