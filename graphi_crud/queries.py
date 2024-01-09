@@ -3,21 +3,7 @@ import re
 import graphene
 from django.apps import apps
 from graphene import List, ObjectType
-
-
-class StringFilterKeywordsInputType(graphene.InputObjectType):
-    exact = graphene.String()
-    icontains = graphene.String()
-    istartswith = graphene.String()
-    iendswith = graphene.String()
-
-
-class DateFilterKeywordsInputType(graphene.InputObjectType):
-    exact = graphene.String()
-    lt = graphene.String()
-    lte = graphene.String()
-    gt = graphene.String()
-    gte = graphene.String()
+from .filters import StringFilterKeywordsInputType, DateFilterKeywordsInputType
 
 
 
