@@ -1,5 +1,4 @@
 import graphene
-
 from graphi_crud.queries import Queries
 from graphi_crud.create_mutation import CreateMutation
 from graphi_crud.update_mutation import UpdateMutation

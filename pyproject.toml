@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "graphi_crud"
+version = "1.0.0"
+description = "Graphene Dajngo CRUD generator"
+authors = ["abelayalew <abelayalew81@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+homepage = "https://github.com/abelayalew/graphi"
+repository = "https://github.com/abelayalew/graphi"
+
+
+[tool.poetry.dependencies]
+python = "^3.11"
+graphene-django = "^3.2.0"
+Django = "^5.0"
+
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
