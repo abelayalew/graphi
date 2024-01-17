@@ -5,7 +5,7 @@
 pip install graphi-crud
 ```
 
-# Usage
+## Usage
 
 ```
 import graphene
@@ -33,7 +33,7 @@ schema = graphene.Schema(query=Query, mutation=Mutation)
 
 register your `schema` in settings and your good to go
 
-# writing Queries
+## writing Queries
 
 ```
 {
@@ -44,7 +44,7 @@ register your `schema` in settings and your good to go
 }
 ```
 
-# create mutation example
+## create mutation example
 
 ```
 mutation{
@@ -57,7 +57,7 @@ mutation{
 }
 ```
 
-# update mutation example
+## update mutation example
 
 ```
 mutation{
@@ -71,7 +71,7 @@ mutation{
 }
 ```
 
-# delete mutation examples
+## delete mutation examples
 
 ```
 mutation{
