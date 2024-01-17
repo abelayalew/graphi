@@ -70,3 +70,14 @@ class OTP(BaseModelMixin):
 
     def __str__(self):
         return self.otp
+
+class Employee(BaseModelMixin):
+    user = models.ForeignKey(User, models.CASCADE)
+    name = models.CharField(max_length=50)
+    phone = models.CharField(max_length=10)
+    address = models.CharField(max_length=100)
+    salary = models.IntegerField()
+    designation = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
