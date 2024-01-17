@@ -1,5 +1,6 @@
 # Django Graphene CRUD Generator
 
+## Installation
 ```
 pip install graphi-crud
 ```

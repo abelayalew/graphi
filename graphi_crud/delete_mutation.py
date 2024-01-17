@@ -46,7 +46,7 @@ class DeleteMutation(MutationsMixin):
     def generate_delete_mutation_class(cls, model):
         argument_class = cls.generate_argument_class(model)
         _ =  type(
-            f'{model.__name__}UpdateMutation',
+            f'{model.__name__}DeleteMutation',
             (graphene.Mutation,),
             {
                 'Arguments': argument_class,
