@@ -14,6 +14,16 @@ class StringFilterKeywordsInputType(graphene.InputObjectType):
     isnull = graphene.Boolean()
 
 
+class NumberFilterKeywordsInputType(graphene.InputObjectType):
+    exact = graphene.Int()
+    lt = graphene.Int()
+    lte = graphene.Int()
+    gt = graphene.Int()
+    gte = graphene.Int()
+    range = graphene.List(graphene.Int)
+    isnull = graphene.Boolean()
+
+
 class DateFilterKeywordsInputType(graphene.InputObjectType):
     exact = graphene.String()
     lt = graphene.String()

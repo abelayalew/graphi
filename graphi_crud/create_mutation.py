@@ -4,17 +4,6 @@ from .mutations import MutationsMixin
 
 class CreateMutation(MutationsMixin):
     @classmethod
-    def generate_input_type(cls, model):
-        fields = cls.get_fields(model)
-        return type(
-            f"{model.__name__}InputType",
-            (graphene.InputObjectType, ),
-            {
-                field: graphene.String() for field in fields
-            }
-        )
-
-    @classmethod
     def generate_argument_class(cls, model):
         input_type = cls.generate_input_type(model)
         return type(

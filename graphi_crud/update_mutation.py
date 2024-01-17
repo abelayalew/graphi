@@ -5,17 +5,6 @@ from .queries import Queries
 
 class UpdateMutation(MutationsMixin):
     @classmethod
-    def generate_input_type(cls, model):
-        fields = cls.get_fields(model)
-        return type(
-            f"{model.__name__}InputType",
-            (graphene.InputObjectType, ),
-            {
-                field: graphene.String() for field in fields
-            }
-        )
-    
-    @classmethod
     def generate_where_type(cls, model):
         return Queries.generate_where_clause(model)
 

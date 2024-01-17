@@ -3,7 +3,7 @@ import re
 import graphene
 from django.apps import apps
 from graphene import List, ObjectType
-from .filters import StringFilterKeywordsInputType, DateFilterKeywordsInputType
+from .filters import StringFilterKeywordsInputType, DateFilterKeywordsInputType, NumberFilterKeywordsInputType
 
 
 
@@ -22,12 +22,16 @@ class Queries(Types, ObjectType):
     @classmethod
     def where_clause_from_internal_field(cls, internal_type):
         date_fields = ["DateTimeField", "DateField"]
+        number_fields = ["IntegerField", "FloatField", "DecimalField"]
 
         if internal_type in cls.non_filterable_field_types:
             return None
 
         if internal_type in date_fields:
             return DateFilterKeywordsInputType()
+        
+        if internal_type in number_fields:
+            return NumberFilterKeywordsInputType()
 
         return StringFilterKeywordsInputType()
 
