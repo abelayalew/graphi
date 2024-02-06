@@ -80,3 +80,12 @@ mutation{
   }
 }
 ```
+
+## permissions
+add `graphql_permissions` attribute on your model class with a list of permissions
+example:
+```  
+  class Employee(models.Model):
+      ...fields...
+      graphql_permissions = ['accounts.add_employee', 'accounts.change_employee']
+```

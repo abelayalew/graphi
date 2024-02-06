@@ -24,6 +24,7 @@ class UpdateMutation(MutationsMixin):
     @classmethod
     def update_mutate(cls, model):
         def mutate(root, info, *args, **kwargs):
+            cls.check_permission(info.context.user, model)
             inputs = kwargs.get('inputs')
             where = kwargs.get('where')
 

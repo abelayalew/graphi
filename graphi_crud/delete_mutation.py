@@ -23,6 +23,7 @@ class DeleteMutation(MutationsMixin):
     @classmethod
     def delete_mutate(cls, model):
         def mutate(root, info, *args, **kwargs):
+            cls.check_permission(info.context.user, model)
             where = kwargs.get('where')
 
             if not where:

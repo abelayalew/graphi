@@ -79,5 +79,7 @@ class Employee(BaseModelMixin):
     salary = models.IntegerField()
     designation = models.CharField(max_length=50)
 
+    graphql_permissions = ["add_employee"]
+
     def __str__(self):
         return self.name

@@ -17,6 +17,7 @@ class CreateMutation(MutationsMixin):
     @classmethod
     def create_mutate(cls, model):
         def mutate(root, info, *args, **kwargs):
+            cls.check_permission(info.context.user, model)
             inputs = kwargs.get('inputs')
             if not inputs or not isinstance(inputs, list):
                 return None

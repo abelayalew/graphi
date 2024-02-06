@@ -43,5 +43,22 @@ class MutationsMixin(Types, graphene.ObjectType):
                 field: cls.map_field_to_graphene_type(model._meta.get_field(field)) for field in fields
             }
         )
+    
+
+    @classmethod
+    def check_permission(user, model):
+        if not user.is_authenticated:
+            raise Exception('Permission Denied')
+        
+        if not hasattr(model, 'graphql_permissions'):
+            return True
+        
+        if not model.graphql_permissions:
+            return True
+        
+        if not user.has_perms(model.graphql_permissions):
+            raise Exception('Permission Denied')
+        
+        return True
 
 
