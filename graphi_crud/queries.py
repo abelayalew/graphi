@@ -34,6 +34,22 @@ class Queries(Types, ObjectType):
             return NumberFilterKeywordsInputType()
 
         return StringFilterKeywordsInputType()
+    
+    @classmethod
+    def check_permission(cls, user, model):
+        if not user.is_authenticated:
+            raise Exception('Permission Denied')
+        
+        if not hasattr(model, 'graphql_permissions'):
+            return True
+        
+        if not model.graphql_permissions:
+            return True
+        
+        if not user.has_perms(model.graphql_permissions):
+            raise Exception('Permission Denied')
+        
+        return True
 
     @classmethod
     def generate_where_clause(cls, model):
@@ -91,6 +107,7 @@ class Queries(Types, ObjectType):
     @classmethod
     def generate_resolve_method(cls, model):        
         def _(root, info, *args, **kwargs):
+            cls.check_permission(info.context.user, model)
             where = kwargs.get("where")
             offset = kwargs.get("offset")
             limit = kwargs.get("limit")
