@@ -17,7 +17,7 @@ class UpdateMutation(MutationsMixin):
             (),
             {
                 "where": where_type,
-                "inputs": graphene.List(input_type)
+                "input": graphene.List(input_type)
             }
         )
 
@@ -25,23 +25,24 @@ class UpdateMutation(MutationsMixin):
     def update_mutate(cls, model):
         def mutate(root, info, *args, **kwargs):
             cls.check_permission(info.context.user, model)
-            inputs = kwargs.get('inputs')
+            inputs = kwargs.get('input')
             where = kwargs.get('where')
 
             if not inputs or not isinstance(inputs, list):
-                raise Exception('there is no inputs or inputs')
+                raise Exception('there is no input')
             
             if not where:
                 raise Exception('there is no where clause')
             
             updated_objects = []
 
-            for input in inputs:
+            for _input in inputs:
+                _input = cls.resolve_related_objects_from_input(model, _input)
                 queryset = model.objects.all()
                 query = Queries.query_set_builder(where)
                 queryset = queryset.filter(**query)
                 for obj in queryset:
-                    for field, value in input.items():
+                    for field, value in _input.items():
                         setattr(obj, field, value)
                     obj.save()
                     updated_objects.append(obj)

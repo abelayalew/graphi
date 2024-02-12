@@ -71,6 +71,21 @@ class MutationsMixin(Types, graphene.ObjectType):
         )
 
     @classmethod
+    def resolve_related_objects_from_input(cls, model, _input: dict):
+        related_objects = {}
+        for input_field in _input:
+            if input_field.endswith('_pk'):
+                field_name = input_field.replace('_pk', '')
+                related_model = model._meta.get_field(field_name).related_model
+                try:
+                    related_objects[field_name] = related_model.objects.get(pk=_input[input_field])
+                except related_model.DoesNotExist:
+                    raise Exception(f'{related_model.__name__} with pk {_input[input_field]} does not exist.')
+            else:
+                related_objects[input_field] = _input[input_field]
+        return related_objects
+
+    @classmethod
     def check_permission(cls, user, model):
         if not hasattr(model, 'graphql_permissions'):
             return True
