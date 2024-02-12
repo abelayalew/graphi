@@ -37,6 +37,8 @@ class UpdateMutation(MutationsMixin):
             updated_objects = []
 
             for _input in inputs:
+                many_to_many_input, _input = cls.resolve_many_to_many(model, _input)
+                print(many_to_many_input)
                 _input = cls.resolve_related_objects_from_input(model, _input)
                 queryset = model.objects.all()
                 query = Queries.query_set_builder(where)
@@ -44,8 +46,12 @@ class UpdateMutation(MutationsMixin):
                 for obj in queryset:
                     for field, value in _input.items():
                         setattr(obj, field, value)
+                    for field, value in many_to_many_input.items():
+                        getattr(obj, field).set(value)
+
                     obj.save()
                     updated_objects.append(obj)
+
 
             return {
                 'data': updated_objects,

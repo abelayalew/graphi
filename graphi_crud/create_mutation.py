@@ -28,8 +28,14 @@ class CreateMutation(MutationsMixin):
 
             created_objects = []
             for _input in inputs:
+                many_to_many_input, _input = cls.resolve_many_to_many(model, _input)
                 _input = cls.resolve_related_objects_from_input(model, _input)
-                created_objects.append(model.objects.create(**_input))
+                instance = model.objects.create(**_input)
+
+                for field, value in many_to_many_input.items():
+                    getattr(instance, field).set(value)
+
+                created_objects.append(instance)
 
             return {
                 'data': created_objects,

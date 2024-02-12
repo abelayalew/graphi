@@ -34,13 +34,22 @@ class Types:
                 )
             excluded_fields = model.graphql_exclude_fields
         fields = []
-        for field in model._meta.fields:
-            if field.name not in excluded_fields:
+        for field in model._meta.get_fields():
+            if field.name not in excluded_fields and hasattr(model, field.name):
+                try:
+                    if getattr(model, field.name).reverse:
+                        continue
+                except AttributeError:
+                    pass
                 fields.append(field.name)
         return fields
 
     @classmethod
     def generate_model_type(cls, model):
+        if model.__name__ == "Employee":
+            print('-'*10)
+            print("model:", model)
+            print(cls.get_fields(model))
         model_type = type(
             f"{model.__name__.lower()}",
             (DjangoObjectType,),

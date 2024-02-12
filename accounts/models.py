@@ -79,6 +79,7 @@ class Employee(BaseModelMixin):
     address = models.CharField(max_length=100)
     salary = models.IntegerField()
     designation = models.CharField(max_length=50)
+    friends = models.ManyToManyField(User, related_name="friends", blank=True)
 
     graphql_permissions = []
 
