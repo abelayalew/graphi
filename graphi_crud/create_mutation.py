@@ -16,15 +16,34 @@ class CreateMutation(MutationsMixin):
 
     @classmethod
     def create_mutate(cls, model):
+        def resolve_related_objects(model, _input: dict):
+            related_objects = {}
+            for input_field in _input:
+                if input_field.endswith('_pk'):
+                    field_name = input_field.replace('_pk', '')
+                    related_model = model._meta.get_field(field_name).related_model
+                    try:
+                        related_objects[field_name] = related_model.objects.get(pk=_input[input_field])
+                    except related_model.DoesNotExist:
+                        raise Exception(f'{related_model.__name__} with pk {_input[input_field]} does not exist.')
+                else:
+                    related_objects[input_field] = _input[input_field]
+            return related_objects
+
         def mutate(root, info, *args, **kwargs):
             cls.check_permission(info.context.user, model)
             inputs = kwargs.get('inputs')
-            if not inputs or not isinstance(inputs, list):
-                return None
-            
+
+            if not inputs or not isinstance(inputs, (list, dict)):
+                raise Exception('Invalid Inputs, please provide a list of inputs or a single input object.')
+
+            if isinstance(inputs, dict):
+                inputs = [inputs]
+
             created_objects = []
-            for input in inputs:
-                created_objects.append(model.objects.create(**input))
+            for _input in inputs:
+                _input = resolve_related_objects(model, _input)
+                created_objects.append(model.objects.create(**_input))
 
             return {
                 'data': created_objects,

@@ -38,13 +38,12 @@ class Queries(Types, ObjectType):
         if not hasattr(model, 'graphql_permissions'):
             return True
 
-        if not user.is_authenticated:
-            raise Exception('Permission Denied')
-        
-        
         if not model.graphql_permissions:
             return True
-        
+
+        if not user.is_authenticated:
+            raise Exception('Permission Denied')
+
         if not user.has_perms(model.graphql_permissions):
             raise Exception('Permission Denied')
         

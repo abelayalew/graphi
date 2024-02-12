@@ -66,10 +66,11 @@ class OTP(BaseModelMixin):
     user = models.ForeignKey(User, models.CASCADE)
     otp = models.CharField(max_length=6, default=generate_otp)
     is_used = models.BooleanField(default=False)
-    graphql_exclude = False
+    graphql_exclude = True
 
     def __str__(self):
         return self.otp
+
 
 class Employee(BaseModelMixin):
     user = models.ForeignKey(User, models.CASCADE)
@@ -79,7 +80,7 @@ class Employee(BaseModelMixin):
     salary = models.IntegerField()
     designation = models.CharField(max_length=50)
 
-    graphql_permissions = ["add_employee"]
+    graphql_permissions = []
 
     def __str__(self):
         return self.name
