@@ -58,7 +58,7 @@ class MutationsMixin(Types, graphene.ObjectType):
                 if field.primary_key:
                     continue
 
-            if field.get_internal_type() == 'ForeignKey':
+            if field.get_internal_type() in ['ForeignKey', 'OneToOneField']:
                 new_fields.append(f"{field_name}_pk")
             elif field.get_internal_type() == 'ManyToManyField':
                 new_fields.append(f"{field_name}_pks")
