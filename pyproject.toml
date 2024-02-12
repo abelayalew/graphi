@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "graphi_crud"
-version = "1.0.6"
+version = "1.0.9"
 description = "Graphene Dajngo CRUD generator"
 authors = ["abelayalew <abelayalew81@gmail.com>"]
 license = "MIT"
