@@ -6,8 +6,6 @@ from graphene import List, ObjectType
 from .filters import StringFilterKeywordsInputType, DateFilterKeywordsInputType, NumberFilterKeywordsInputType
 
 
-
-
 class Queries(Types, ObjectType):
     non_filterable_field_types = [
         "ManyToManyRel",
@@ -37,11 +35,12 @@ class Queries(Types, ObjectType):
     
     @classmethod
     def check_permission(cls, user, model):
+        if not hasattr(model, 'graphql_permissions'):
+            return True
+
         if not user.is_authenticated:
             raise Exception('Permission Denied')
         
-        if not hasattr(model, 'graphql_permissions'):
-            return True
         
         if not model.graphql_permissions:
             return True
@@ -65,33 +64,6 @@ class Queries(Types, ObjectType):
         return type(
             f"{model.__name__}FilterCLass", (graphene.InputObjectType,), {**attrs}
         )()
-
-    @classmethod
-    def get_fields(cls, model):
-        excluded_fields = []
-        if hasattr(model, "graphql_fields") and hasattr(
-            model, "graphql_exclude_fields"
-        ):
-            raise Exception(
-                f"please remove graphql_fields or graphql_exclude_fields from {model}"
-            )
-
-        if hasattr(model, "graphql_fields"):
-            if not isinstance(model.graphql_fields, (list, tuple)):
-                raise Exception(f"graphql_fields must be iterable on model {model}")
-            return model.graphql_fields
-
-        if hasattr(model, "graphql_exclude_fields"):
-            if not isinstance(model.graphql_exclude_fields, (list, tuple)):
-                raise Exception(
-                    f"graphql_exclude_fields must be iterable on model {model}"
-                )
-            excluded_fields = model.graphql_exclude_fields
-        fields = []
-        for field in model._meta.fields:
-            if field.name not in excluded_fields:
-                fields.append(field.name)
-        return fields
 
     @classmethod
     def query_set_builder(cls, where: dict):
