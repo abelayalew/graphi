@@ -69,4 +69,7 @@ class Types:
         for app in all_apps:
             models = app.get_models()
             for model in models:
+                if hasattr(model, "graphql_exclude"):
+                    if model.graphql_exclude:
+                        continue
                 yield model
