@@ -1,6 +1,7 @@
 from .graphi_types import Types
 import graphene
 from django.db.utils import IntegrityError
+from graphene_file_upload.scalars import Upload
 
 
 class MutationsMixin(Types, graphene.ObjectType):
@@ -22,9 +23,9 @@ class MutationsMixin(Types, graphene.ObjectType):
             'DateTimeField': graphene.String(),
             'DecimalField': graphene.Float(),
             'EmailField': graphene.String(),
-            'FileField': graphene.String(),
+            'FileField': Upload(),
             'FloatField': graphene.Float(),
-            'ImageField': graphene.String(),
+            'ImageField': Upload(),
             'PositiveIntegerField': graphene.Int(),
             'PositiveSmallIntegerField': graphene.Int(),
             'SlugField': graphene.String(),

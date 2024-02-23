@@ -13,7 +13,8 @@ repository = "https://github.com/abelayalew/graphi"
 [tool.poetry.dependencies]
 python = "^3.11"
 graphene-django = "^3.2.0"
-Django = "^5.0"
+graphene-file-upload = "^1.3.0"
+Django = "^5.0.2"
 
 
 
