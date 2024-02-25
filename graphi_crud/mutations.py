@@ -2,6 +2,7 @@ from .graphi_types import Types
 import graphene
 from django.db.utils import IntegrityError
 from graphene_file_upload.scalars import Upload
+from django.db import models
 
 
 class MutationsMixin(Types, graphene.ObjectType):
@@ -58,6 +59,9 @@ class MutationsMixin(Types, graphene.ObjectType):
             if hasattr(field, 'primary_key'):
                 if field.primary_key:
                     continue
+            
+            if not isinstance(field, models.Field):
+                continue
 
             if field.get_internal_type() in ['ForeignKey', 'OneToOneField']:
                 new_fields.append(f"{field_name}_pk")
