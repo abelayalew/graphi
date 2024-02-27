@@ -8,10 +8,10 @@ from django.db import models
 class MutationsMixin(Types, graphene.ObjectType):
     @classmethod
     def map_field_to_graphene_type(cls, field_name: str, model):
-        if field_name.endswith("_pk"):
+        if field_name.endswith("_id"):
             return graphene.String()
 
-        if field_name.endswith("_pks"):
+        if field_name.endswith("_ids"):
             return graphene.List(graphene.String)
 
         field = model._meta.get_field(field_name)
@@ -64,9 +64,9 @@ class MutationsMixin(Types, graphene.ObjectType):
                 continue
 
             if field.get_internal_type() in ['ForeignKey', 'OneToOneField']:
-                new_fields.append(f"{field_name}_pk")
+                new_fields.append(f"{field_name}_id")
             elif field.get_internal_type() == 'ManyToManyField':
-                new_fields.append(f"{field_name}_pks")
+                new_fields.append(f"{field_name}_ids")
             else:
                 new_fields.append(field_name)
 
@@ -87,15 +87,15 @@ class MutationsMixin(Types, graphene.ObjectType):
     def resolve_related_objects_from_input(cls, model, _input: dict):
         related_objects = {}
         for input_field in _input:
-            if input_field.endswith('_pk'):
-                field_name = input_field.replace('_pk', '')
+            if input_field.endswith('_id'):
+                field_name = input_field.replace('_id', '')
                 related_model = model._meta.get_field(field_name).related_model
                 try:
                     related_objects[field_name] = related_model.objects.get(pk=_input[input_field])
                 except related_model.DoesNotExist:
-                    raise Exception(f'{related_model.__name__} with pk {_input[input_field]} does not exist.')
-            elif input_field.endswith('_pks'):
-                field_name = input_field.replace('_pks', '')
+                    raise Exception(f'{related_model.__name__} with id {_input[input_field]} does not exist.')
+            elif input_field.endswith('_ids'):
+                field_name = input_field.replace('_ids', '')
                 related_model = model._meta.get_field(field_name).related_model
                 related_objects[field_name] = related_model.objects.filter(pk__in=_input[input_field])
             else:
@@ -107,8 +107,8 @@ class MutationsMixin(Types, graphene.ObjectType):
         related_objects = {}
         _input_copy = _input.copy()
         for input_field in _input:
-            if input_field.endswith('_pks'):
-                field_name = input_field.replace('_pks', '')
+            if input_field.endswith('_ids'):
+                field_name = input_field.replace('_ids', '')
                 related_model = model._meta.get_field(field_name).related_model
                 related_objects[field_name] = related_model.objects.filter(pk__in=_input[input_field])
                 del _input_copy[input_field]
