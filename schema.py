@@ -19,4 +19,4 @@ class Mutation(CreateMutation, UpdateMutation, DeleteMutation):
     pass
 
 
-schema = graphene.Schema(query=Query, mutation=Mutation)
+schema = graphene.Schema(query=Query, mutation=Mutation, auto_camelcase=False)

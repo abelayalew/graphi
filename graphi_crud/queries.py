@@ -13,7 +13,7 @@ class Queries(Types, ObjectType):
         "OneToOneRel",
         "ImageField",
         "FileField",
-        "ForeignKey",
+        # "ForeignKey",
         "JSONField",
     ]
 
@@ -58,7 +58,10 @@ class Queries(Types, ObjectType):
             if not field_where_clause:
                 continue
 
-            attrs[field.name] = field_where_clause
+            if internal_type == 'ForeignKey':
+                attrs[f'{field.name}_id'] = field_where_clause
+            else:
+                attrs[field.name] = field_where_clause
 
         return type(
             f"{model.__name__}FilterCLass", (graphene.InputObjectType,), {**attrs}
@@ -71,8 +74,11 @@ class Queries(Types, ObjectType):
             return _
 
         for field, lookup in where.items():
+            if field.endswith('_id'):
+                field = field[:-3] + '__id'
             for lookup_word, value in lookup.items():
                 _[f"{field}__{lookup_word}"] = value
+        
         return _
 
     @classmethod
