@@ -24,7 +24,7 @@ class MutationsMixin(Types, graphene.ObjectType):
             'DateTimeField': graphene.String(),
             'DecimalField': graphene.Float(),
             'EmailField': graphene.String(),
-            'FileField': Upload(),
+            'FileField': graphene.String(),
             'FloatField': graphene.Float(),
             'ImageField': Upload(),
             'PositiveIntegerField': graphene.Int(),
