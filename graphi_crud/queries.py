@@ -82,7 +82,7 @@ class Queries(Types, ObjectType):
         return _
 
     @classmethod
-    def generate_resolve_method(cls, model):        
+    def generate_resolve_method(cls, model, is_aggregate=False):
         def _(root, info, *args, **kwargs):
             cls.check_permission(info.context.user, model)
             where = kwargs.get("where")
@@ -92,6 +92,11 @@ class Queries(Types, ObjectType):
             queryset = model.objects.all()
             query = cls.query_set_builder(where)
             queryset = queryset.filter(**query)
+
+            if is_aggregate:
+                return {
+                    'count': queryset.count()
+                }
 
             if offset:
                 queryset = queryset[offset:]
@@ -114,10 +119,6 @@ class Queries(Types, ObjectType):
     def generate_queries(cls, _apps: list):
         models = cls.find_all_models(_apps)
         for model in models:
-            def _resolve_aggregate(_self, info):
-                return {
-                    'count': model.objects.count()
-                }
             if hasattr(model, "graphql_exclude"):
                 if model.graphql_exclude:
                     continue
@@ -135,8 +136,12 @@ class Queries(Types, ObjectType):
                     limit=graphene.Int(),
                 ),
             )
-            setattr(cls, f'{query_name}_aggregate', graphene.Field(AggregateType))
-            setattr(cls, f'resolve_{query_name}_aggregate', _resolve_aggregate)
+            setattr(
+                cls,
+                f'{query_name}_aggregate',
+                graphene.Field(AggregateType, where=where_clause)
+            )
+            setattr(cls, f'resolve_{query_name}_aggregate', cls.generate_resolve_method(model, is_aggregate=True))
             setattr(cls, f"resolve_{query_name}", resolve_method)
 
     @classmethod
