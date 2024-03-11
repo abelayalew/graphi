@@ -1,4 +1,4 @@
-from .graphi_types import Types
+from .graphi_types import Types, AggregateType
 import re
 import graphene
 from django.apps import apps
@@ -114,6 +114,10 @@ class Queries(Types, ObjectType):
     def generate_queries(cls, _apps: list):
         models = cls.find_all_models(_apps)
         for model in models:
+            def _resolve_aggregate(_self, info):
+                return {
+                    'count': model.objects.count()
+                }
             if hasattr(model, "graphql_exclude"):
                 if model.graphql_exclude:
                     continue
@@ -131,6 +135,8 @@ class Queries(Types, ObjectType):
                     limit=graphene.Int(),
                 ),
             )
+            setattr(cls, f'{query_name}_aggregate', graphene.Field(AggregateType))
+            setattr(cls, f'resolve_{query_name}_aggregate', _resolve_aggregate)
             setattr(cls, f"resolve_{query_name}", resolve_method)
 
     @classmethod

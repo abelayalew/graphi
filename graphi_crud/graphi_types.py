@@ -1,5 +1,11 @@
+import graphene
 from graphene_django import DjangoObjectType
 from django.apps import apps
+
+
+class AggregateType(graphene.ObjectType):
+    count = graphene.Int()
+
 
 class Types:
     django_object_types = dict()
@@ -46,10 +52,11 @@ class Types:
 
     @classmethod
     def generate_model_type(cls, model):
-        if model.__name__ == "Employee":
-            print('-'*10)
-            print("model:", model)
-            print(cls.get_fields(model))
+        def _resolve_aggregate(_self, info):
+            return {
+                'count': model.objects.count()
+            }
+
         model_type = type(
             f"{model.__name__.lower()}",
             (DjangoObjectType,),
@@ -59,6 +66,8 @@ class Types:
                     (),
                     {"model": model, "fields": cls.get_fields(model)},
                 ),
+                "aggregate": graphene.Field(AggregateType),
+                "resolve_aggregate": _resolve_aggregate
             },
         )
         return model_type
