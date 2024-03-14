@@ -42,6 +42,7 @@ class MutationsMixin(Types, graphene.ObjectType):
             'AutoField': graphene.Int(),
             'BigAutoField': graphene.Int(),
             'ForeignKey': graphene.String(),
+            'JSONField': graphene.JSONString(),
         }
         return type_mapping.get(field_type)
 
