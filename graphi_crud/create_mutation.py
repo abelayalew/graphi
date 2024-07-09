@@ -18,7 +18,9 @@ class CreateMutation(MutationsMixin):
     def create_mutate(cls, model):
         def mutate(root, info, *args, **kwargs):
             cls.check_permission(info.context.user, model)
+            user = info.context.user
             inputs = kwargs.get('inputs')
+            print(inputs)
 
             if not inputs or not isinstance(inputs, (list, dict)):
                 raise Exception('Invalid Inputs, please provide a list of inputs or a single input object.')
@@ -29,7 +31,7 @@ class CreateMutation(MutationsMixin):
             created_objects = []
             for _input in inputs:
                 many_to_many_input, _input = cls.resolve_many_to_many(model, _input)
-                _input = cls.resolve_related_objects_from_input(model, _input)
+                _input = cls.resolve_related_objects_from_input(model, _input, info)
                 instance = model.objects.create(**_input)
 
                 for field, value in many_to_many_input.items():

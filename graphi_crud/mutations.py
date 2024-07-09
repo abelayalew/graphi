@@ -3,13 +3,16 @@ import graphene
 from django.db.utils import IntegrityError
 from graphene_file_upload.scalars import Upload
 from django.db import models
+from django.contrib.auth import get_user_model
 
 
 class MutationsMixin(Types, graphene.ObjectType):
+    user_model = get_user_model()
+
     @classmethod
     def map_field_to_graphene_type(cls, field_name: str, model):
         if field_name.endswith("_id"):
-            return graphene.String()
+            return graphene.String(default_value="default_id")
 
         if field_name.endswith("_ids"):
             return graphene.List(graphene.String)
@@ -85,12 +88,18 @@ class MutationsMixin(Types, graphene.ObjectType):
         )
 
     @classmethod
-    def resolve_related_objects_from_input(cls, model, _input: dict):
+    def resolve_related_objects_from_input(cls, model, _input: dict, info=None):
         related_objects = {}
         for input_field in _input:
             if input_field.endswith('_id'):
                 field_name = input_field.replace('_id', '')
                 related_model = model._meta.get_field(field_name).related_model
+                print(related_model)
+                if related_model == cls.user_model and _input[input_field] == "default_id":
+                    if info and info.context.user:
+                        _input[input_field] = info.context.user.id
+                    else:
+                        _input[input_field] = None
                 try:
                     related_objects[field_name] = related_model.objects.get(pk=_input[input_field])
                 except related_model.DoesNotExist:
@@ -126,6 +135,9 @@ class MutationsMixin(Types, graphene.ObjectType):
 
         if not user.is_authenticated:
             raise Exception('Permission Denied')
+        
+        if model.graphql_permissions == 'is_authenticated':
+            return True
 
         if not user.has_perms(model.graphql_permissions):
             raise Exception('Permission Denied')
