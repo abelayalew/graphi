@@ -43,6 +43,9 @@ class Queries(Types, ObjectType):
 
         if not user.is_authenticated:
             raise Exception('Permission Denied')
+        
+        if model.graphql_permissions == ('is_authenticated',):
+            return True
 
         if not user.has_perms(model.graphql_permissions):
             raise Exception('Permission Denied')
