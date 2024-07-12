@@ -83,6 +83,11 @@ class Employee(BaseModelMixin):
     friends = models.ManyToManyField(User, related_name="friends", blank=True)
 
     graphql_permissions = []
+    graphql_include_methods = ('one', )
 
     def __str__(self):
         return self.name
+
+    @property
+    def one(self):
+        return "asd"

@@ -94,7 +94,6 @@ class MutationsMixin(Types, graphene.ObjectType):
             if input_field.endswith('_id'):
                 field_name = input_field.replace('_id', '')
                 related_model = model._meta.get_field(field_name).related_model
-                print(related_model)
                 if related_model == cls.user_model and _input[input_field] == "default_id":
                     if info and info.context.user:
                         _input[input_field] = info.context.user.id

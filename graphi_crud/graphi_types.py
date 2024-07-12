@@ -48,7 +48,24 @@ class Types:
                 except AttributeError:
                     pass
                 fields.append(field.name)
+        
         return fields
+    
+    @classmethod
+    def get_field_resolvers(cls, model):
+        def _resolver(field_name):
+            def _(self, info):
+                return getattr(self, field_name)
+            return _
+
+        fields = {}
+        if hasattr(model, 'graphql_include_methods'):
+            for method_field in model.graphql_include_methods:
+                fields[f"resolve_{method_field}"] = _resolver(method_field)
+                fields[method_field] = graphene.String()
+        
+        return fields
+
 
     @classmethod
     def generate_model_type(cls, model):
@@ -67,7 +84,8 @@ class Types:
                     {"model": model, "fields": cls.get_fields(model)},
                 ),
                 "aggregate": graphene.Field(AggregateType),
-                "resolve_aggregate": _resolve_aggregate
+                "resolve_aggregate": _resolve_aggregate,
+                **cls.get_field_resolvers(model)
             },
         )
         return model_type

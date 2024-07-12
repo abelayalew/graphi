@@ -20,7 +20,6 @@ class CreateMutation(MutationsMixin):
             cls.check_permission(info.context.user, model)
             user = info.context.user
             inputs = kwargs.get('inputs')
-            print(inputs)
 
             if not inputs or not isinstance(inputs, (list, dict)):
                 raise Exception('Invalid Inputs, please provide a list of inputs or a single input object.')
