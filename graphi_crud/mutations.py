@@ -11,7 +11,7 @@ class MutationsMixin(Types, graphene.ObjectType):
 
     @classmethod
     def map_field_to_graphene_type(cls, field_name: str, model):
-        if field_name.endswith("_id"):
+        if field_name.endswith("_id") and model == cls.user_model:
             return graphene.String(default_value="default_id")
 
         if field_name.endswith("_ids"):
@@ -100,9 +100,12 @@ class MutationsMixin(Types, graphene.ObjectType):
                     else:
                         _input[input_field] = None
                 try:
-                    related_objects[field_name] = related_model.objects.get(pk=_input[input_field])
+                    if _input[input_field] != None:
+                        related_objects[field_name] = related_model.objects.get(pk=_input[input_field])
                 except related_model.DoesNotExist:
                     raise Exception(f'{related_model.__name__} with id {_input[input_field]} does not exist.')
+                except Exception as e:
+                    raise Exception(f"{input_field} {e}")
             elif input_field.endswith('_ids'):
                 field_name = input_field.replace('_ids', '')
                 related_model = model._meta.get_field(field_name).related_model
