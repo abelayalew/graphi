@@ -55,14 +55,14 @@ class Types:
     def get_field_resolvers(cls, model):
         def _resolver(field_name):
             def _(self, info):
-                return getattr(self, field_name)
+                return getattr(self, field_name)()
             return _
 
         fields = {}
         if hasattr(model, 'graphql_include_methods'):
             for method_field in model.graphql_include_methods:
                 fields[f"resolve_{method_field}"] = _resolver(method_field)
-                fields[method_field] = graphene.String()
+                fields[method_field] = graphene.List(cls.get_or_generate_django_object_type(model.graphql_include_methods[method_field]))
         
         return fields
 

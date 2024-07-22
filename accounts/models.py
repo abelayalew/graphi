@@ -1,5 +1,5 @@
 import random
-
+import graphene
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -83,7 +83,7 @@ class Employee(BaseModelMixin):
     friends = models.ManyToManyField(User, related_name="friends", blank=True)
 
     graphql_permissions = []
-    graphql_include_methods = ('one', )
+    graphql_include_methods = {'one': graphene.String()}
 
     def __str__(self):
         return self.name
