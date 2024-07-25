@@ -69,6 +69,17 @@ class Queries(Types, ObjectType):
         return type(
             f"{model.__name__}FilterCLass", (graphene.InputObjectType,), {**attrs}
         )()
+    
+    @classmethod
+    def generate_orderby_clause(cls, model):
+        attrs = {}
+        for field in model._meta.fields:
+            attrs[f"{field.name}_ASC"] = f"{field.name}"
+            attrs[f"{field.name}_DESC"] = f"-{field.name}"
+
+        return type(
+            f"{model.__name__}OrderCLass", (graphene.Enum,), {**attrs}
+        )()
 
     @classmethod
     def query_set_builder(cls, where: dict):
@@ -91,6 +102,7 @@ class Queries(Types, ObjectType):
             where = kwargs.get("where")
             offset = kwargs.get("offset")
             limit = kwargs.get("limit")
+            orderby = kwargs.get("orderby")
 
             queryset = model.objects.all()
             query = cls.query_set_builder(where)
@@ -106,6 +118,9 @@ class Queries(Types, ObjectType):
 
             if limit:
                 queryset = queryset[:limit]
+            
+            if orderby:
+                queryset = queryset.order_by(orderby.value)
 
             return queryset
 
@@ -126,6 +141,7 @@ class Queries(Types, ObjectType):
                 if model.graphql_exclude:
                     continue
             where_clause = cls.generate_where_clause(model)
+            orderby_clause = cls.generate_orderby_clause(model)
             model_type = cls.get_or_generate_django_object_type(model)
             resolve_method = cls.generate_resolve_method(model)
             query_name = cls.to_snake_case(model.__name__)
@@ -135,6 +151,7 @@ class Queries(Types, ObjectType):
                 List(
                     model_type,
                     where=where_clause,
+                    orderby=orderby_clause,
                     offset=graphene.Int(),
                     limit=graphene.Int(),
                 ),
